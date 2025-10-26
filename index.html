@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echoes of the Past</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background: url('https://images.unsplash.com/photo-1585335147578-7f9a00f3f08d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'), #fff;
+            background-size: cover;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            border-right: 1px solid #ddd;
+            transition: transform 0.3s ease;
+        }
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+            width: calc(100% - 270px);
+            transition: margin-left 0.3s ease;
+        }
+        header {
+            background: url('https://images.unsplash.com/photo-1585335147578-7f9a00f3f08d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'), #fff;
+            background-size: cover;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+        }
+        #menu-toggle {
+            display: none;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        header p {
+            margin: 5px 0;
+            font-style: italic;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            margin: 10px 0;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        nav ul li a:hover {
+            color: #007bff;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .hero {
+            background: url('https://png.pngtree.com/thumb_back/fh260/background/20251006/pngtree-vintage-newspaper-collage-with-rustic-textures-image_19778207.webp') center/cover no-repeat;
+            padding: 60px 20px;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .hero h2 {
+            font-size: 2.5em;
+        }
+        .button {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            margin: 10px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .button i {
+            margin-right: 8px;
+        }
+        .chatbot, .this-day {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chatbot input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .chatbot-response {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        footer a {
+            margin: 0 10px;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        footer a:hover {
+            color: #0056b3;
+        }
+        .quotes-wall .quote {
+            font-style: italic;
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: absolute;
+                z-index: 1000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            #menu-toggle {
+                display: block;
+            }
+            .hero {
+                padding: 40px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="chatbot">
+                <h3><i class="fas fa-robot"></i> AI History Chatbot</h3>
+                <input type="text" id="chatbot-input" placeholder="Ask about history or chat casually...">
+                <button onclick="getChatbotResponse()"><i class="fas fa-paper-plane"></i> Ask</button>
+                <p>Ask questions like “What started World War I?” or chat casually. Answers are grounded in history from our YouTube channels.</p>
+                <div class="chatbot-response" id="chatbot-response"></div>
+            </div>
+            <div class="this-day">
+                <h3><i class="fas fa-calendar-alt"></i> This Day in History - October 26</h3>
+                <p id="today-fact">On this day in 1945, the United Nations was founded to prevent future wars.</p>
+                <a href="#this-day">Learn More About October 26 Events</a>
+            </div>
+        </div>
+        <div class="main-content">
+            <header>
+                <button id="menu-toggle"><i class="fas fa-bars"></i></button>
+                <h1>Echoes of the Past</h1>
+                <p>Learn from Yesterday. Change Tomorrow.</p>
+                <nav>
+                    <ul>
+                        <li><a onclick="showPage('home')"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a onclick="showPage('watch')"><i class="fas fa-video"></i> Watch</a></li>
+                        <li><a onclick="showPage('lessons')"><i class="fas fa-book"></i> Lessons from History</a></li>
+                        <li><a onclick="showPage('facts')"><i class="fas fa-lightbulb"></i> Crazy History Facts</a></li>
+                        <li><a onclick="showPage('peace')"><i class="fas fa-dove"></i> After War: Lessons in Peace</a></li>
+                        <li><a onclick="showPage('heroes')"><i class="fas fa-medal"></i> Heroes of Humanity</a></li>
+                        <li><a onclick="showPage('this-day')"><i class="fas fa-calendar-day"></i> This Day in History</a></li>
+                        <li><a onclick="showPage('then-now')"><i class="fas fa-clock"></i> Then & Now</a></li>
+                        <li><a onclick="showPage('documentaries')"><i class="fas fa-film"></i> Documentaries</a></li>
+                        <li><a onclick="showPage('community')"><i class="fas fa-users"></i> Community</a></li>
+                        <li><a onclick="showPage('quotes')"><i class="fas fa-quote-left"></i> Quotes Wall</a></li>
+                        <li><a onclick="showPage('contact')"><i class="fas fa-envelope"></i> Contact / About</a></li>
+                    </ul>
+                </nav>
+            </header>
+
+            <div id="home" class="page active">
+                <div class="hero">
+                    <h2>“If we don’t listen to history, we’re doomed to repeat it.”</h2>
+                    <a href="https://www.youtube.com/@Historicaltimemachine-i6c" class="button"><i class="fas fa-video"></i> Watch on YouTube - Historical Time Machine</a>
+                    <a href="https://www.youtube.com/channel/UC3GL_6SYnKS06mxLjrfiBhQ" class="button"><i class="fas fa-video"></i> Watch on YouTube - theyoutubebuisnnes</a>
+                    <a href="https://open.spotify.com/show/2NQttvAap1Xv2y6uM1rpxs" class="button"><i class="fas fa-podcast"></i> Listen to the Podcast on Spotify</a>
+                </div>
+                <div class="card">
+                    <h3>Mission Statement</h3>
+                    <p>Echoes of the Past exists to remind people that every event in history carries a lesson for the future. We curate content from our YouTube channels and reliable sources like Smithsonian, Britannica, and historical archives to inspire learning and reflection.</p>
+                </div>
+                <div class="card">
+                    <h3>Featured Lesson</h3>
+                    <p>Explore the fall of empires and modern parallels. Watch this video from Historical Time Machine for insights.</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" title="Placeholder Video" frameborder="0" allowfullscreen></iframe>
+                    <p>Source: Historical Time Machine. Reflection: How do ancient power struggles mirror today's global politics?</p>
+                </div>
+            </div>
+
+            <div id="watch" class="page">
+                <h2>Step into the Historical Time Machine</h2>
+                <div class="card">
+                    <h3>Historical Time Machine Channel</h3>
+                    <p>Travel through time with deep dives into human history. Weekly uploads on civilizations, wars, and innovations.</p>
+                    <!-- Limited videos available; using placeholders -->
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" title="Placeholder Video" frameborder="0" allowfullscreen></iframe>
+                    <p>Featured Playlist: Historical Deep Dives. Link: <a href="https://www.youtube.com/@Historicaltimemachine-i6c/playlists">Explore More</a></p>
+                </div>
+                <div class="card">
+                    <h3>theyoutubebuisnnes Channel</h3>
+                    <p>Uncover powerful stories and hidden truths from the past. From forgotten heroes to mysterious events.</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" title="Placeholder Video" frameborder="0" allowfullscreen></iframe>
+                    <p>Featured Playlist: Untold Stories. Link: <a href="https://www.youtube.com/channel/UC3GL_6SYnKS06mxLjrfiBhQ/playlists">Explore More</a></p>
+                </div>
+            </div>
+
+            <div id="lessons" class="page">
+                <h2>Lessons from History</h2>
+                <p>Explore key historical events and their modern relevance. Each includes sources, reflections, and videos from our channels.</p>
+                <div class="card">
+                    <h3>Empires and Revolutions</h3>
+                    <p>Roman Empire's fall due to overexpansion. Source: Britannica. Reflection: Are modern superpowers at risk?</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="card">
+                    <h3>Inventions that Changed the World</h3>
+                    <p>Gutenberg’s printing press revolutionized information. Source: History.com. Reflection: What’s next?</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="card">
+                    <h3>Civil Rights and Humanity’s Struggles</h3>
+                    <p>Civil Rights Movement’s nonviolent protest power. Source: MLK Archives. Reflection: How to apply today?</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="card">
+                    <h3>Lesson #1: Align Interest and Duty</h3>
+                    <p>Ancient philosophers’ wisdom. Source: Medium. Reflection: How to balance passion and responsibility?</p>
+                </div>
+                <div class="card">
+                    <h3>Lesson #2: Hardship Sparks Innovation</h3>
+                    <p>Great Depression’s radical ideas. Source: Collaborative Fund. Reflection: What crises drive change today?</p>
+                </div>
+                <div class="card">
+                    <h3>Lesson #3: Truth is Multifaceted</h3>
+                    <p>Multiple historical perspectives. Source: Inside Higher Ed. Reflection: How to seek truth?</p>
+                </div>
+                <div class="card">
+                    <h3>Lesson #4: Elections Shape History</h3>
+                    <p>Post-WWII elections’ impact. Source: Inside Higher Ed. Reflection: Why vote?</p>
+                </div>
+                <div class="card">
+                    <h3>Lesson #5: Learn from Mistakes</h3>
+                    <p>History’s victories and failures. Source: Alexander Young blog. Reflection: What past error to avoid?</p>
+                </div>
+                <div class="card">
+                    <h3>Lesson #6: Positivity in Adversity</h3>
+                    <p>Anne Frank’s optimism. Source: Tied2Teaching. Reflection: How to stay hopeful?</p>
+                </div>
+                <div class="card">
+                    <h3>Lesson #7: Set Ambitious Goals</h3>
+                    <p>Amelia Earhart’s achievements. Source: Tied2Teaching. Reflection: What’s your big goal?</p>
+                </div>
+            </div>
+
+            <div id="facts" class="page">
+                <h2>Crazy History Facts</h2>
+                <p>Weekly updated, sourced facts to amaze and educate.</p>
+                <div class="card">
+                    <p><strong>Fact:</strong> Napoleon was once attacked by a horde of bunnies.</p>
+                    <p><strong>Source:</strong> Smithsonian Magazine</p>
+                    <p><strong>Lesson:</strong> Even great leaders face chaos they didn’t expect!</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> A Great Dane named Juliana saved lives in WWII by extinguishing a bomb. Source: Parade.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> Alexander the Great was buried alive due to paralysis. Source: Parade.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> Female gladiators fought in Ancient Rome. Source: Parade.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> Ching Shih, a female pirate, led the Red Flag Fleet. Source: Parade.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> Pineapples were 18th-century status symbols. Source: Parade.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> A pig was executed in 1386 France for murder. Source: Parade.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> Great Depression clothes were made from food sacks. Source: Parade.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> Victorians posed with deceased loved ones. Source: Parade.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>Fact:</strong> The shortest war lasted 38 minutes (Anglo-Zanzibar War). Source: Parade.com</p>
+                </div>
+            </div>
+
+            <div id="peace" class="page">
+                <h2>After War: Lessons in Peace</h2>
+                <p>Explore war’s costs and paths to peace with videos and quotes.</p>
+                <div class="card">
+                    <p>Cost of war: WWII’s millions lost, Dresden’s destruction. Source: History.com. Lesson: Diplomacy prevents repeats.</p>
+                    <p><em>“Peace is not absence of conflict, it is the ability to handle conflict by peaceful means.” — Ronald Reagan</em></p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" frameborder="0" allowfullscreen></iframe>
+                    <img src="https://images.unsplash.com/photo-1569529465841-bd15419c5e5b" alt="Peace Symbol" style="width:100%; margin-top:10px; border-radius: 8px;">
+                </div>
+                <div class="card">
+                    <h3>Avoiding Future Wars</h3>
+                    <p>Education and empathy via programs like Peace Corps. Source: UNESCO.</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div id="heroes" class="page">
+                <h2>Heroes of Humanity</h2>
+                <p>Figures who changed the world for good.</p>
+                <div class="card">
+                    <h3>Rosa Parks – Quiet Courage</h3>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Rosaparks.jpg" alt="Rosa Parks" style="width:200px; float:left; margin-right:10px; border-radius: 8px;">
+                    <p>“You must never be fearful about what you are doing when it is right.”</p>
+                    <p>Bio: Sparked civil rights movement. Source: Britannica. Lesson: Peaceful protest drives change.</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="card">
+                    <h3>Harriet Tubman</h3>
+                    <p>Bio: Underground Railroad conductor. Lesson: Resistance inspires action. Source: History.com.</p>
+                </div>
+                <div class="card">
+                    <h3>Malala Yousafzai</h3>
+                    <p>Bio: Youngest Nobel laureate for education advocacy. Lesson: Courage inspires change.</p>
+                </div>
+                <div class="card">
+                    <h3>Jane Goodall</h3>
+                    <p>Bio: Primatologist. Lesson: Research connects us to nature.</p>
+                </div>
+                <div class="card">
+                    <h3>Nelson Mandela</h3>
+                    <p>Bio: Ended apartheid. Lesson: Justice transforms societies.</p>
+                </div>
+            </div>
+
+            <div id="this-day" class="page">
+                <h2>This Day in History - October 26, 2025</h2>
+                <p>Daily historical facts.</p>
+                <div class="card">
+                    <p><strong>1945:</strong> United Nations founded. Source: OnThisDay.com</p>
+                </div>
+                <div class="card">
+                    <p><strong>1881:</strong> Gunfight at the O.K. Corral.</p>
+                </div>
+                <div class="card">
+                    <p><strong>1776:</strong> Benjamin Franklin departs for France.</p>
+                </div>
+                <div class="card">
+                    <p><strong>1950:</strong> Mother Teresa founds Missionaries of Charity.</p>
+                </div>
+                <a href="https://www.onthisday.com/events/october/26">More on OnThisDay.com</a>
+            </div>
+
+            <div id="then-now" class="page">
+                <h2>Then & Now</h2>
+                <p>Compare past and present patterns.</p>
+                <div class="card">
+                    <h3>Great Depression vs. Modern Recessions</h3>
+                    <p>1929 crash vs. 2008 crisis. Source: History.com. Lesson: Inequality persists.</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="card">
+                    <h3>Old Empires vs. Superpowers</h3>
+                    <p>Roman overexpansion vs. US presence. Source: Britannica.</p>
+                </div>
+                <div class="card">
+                    <h3>Technology: Printing Press vs. Internet</h3>
+                    <p>Information revolutions. Source: RareHistoricalPhotos.</p>
+                </div>
+            </div>
+
+            <div id="documentaries" class="page">
+                <h2>Documentaries</h2>
+                <p>Full-length historical documentaries from our channels and curated sources.</p>
+                <div class="card">
+                    <h3>Placeholder Documentary</h3>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEOID" title="Placeholder" frameborder="0" allowfullscreen></iframe>
+                    <p>Source: Historical Time Machine. Note: Limited videos available; check channel for updates.</p>
+                </div>
+                <div class="card">
+                    <h3>The Entire History of Ancient Egypt</h3>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/hO1tzmi1V5g" title="Ancient Egypt" frameborder="0" allowfullscreen></iframe>
+                    <p>Source: History Hit. Duration: 2 hours.</p>
+                </div>
+                <div class="card">
+                    <h3>World War II in Colour</h3>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/6oHPFpJlfzw" title="World War II" frameborder="0" allowfullscreen></iframe>
+                    <p>Source: Netflix.</p>
+                </div>
+            </div>
+
+            <div id="community" class="page">
+                <h2>Community – Your Voice Matters</h2>
+                <p>Share reflections and upvote others. Submit via email.</p>
+                <div class="card">
+                    <p>“The fall of Rome taught me unity is key.”</p>
+                    <button onclick="alert('Upvote recorded!')">Upvote</button>
+                </div>
+                <div class="card">
+                    <p>“Berlin Wall: No wall lasts forever.”</p>
+                    <button onclick="alert('Upvote recorded!')">Upvote</button>
+                </div>
+            </div>
+
+            <div id="quotes" class="page">
+                <h2>Quotes Wall – Wisdom from the Past</h2>
+                <p>Reload for a new quote or browse all.</p>
+                <div class="quotes-wall">
+                    <p class="quote" id="random-quote">“Those who cannot remember the past are condemned to repeat it.” — George Santayana</p>
+                </div>
+                <h3>More Quotes:</h3>
+                <ul>
+                    <li>“History is a vast early warning system.” - Norman Cousins</li>
+                    <li>“The past is never dead. It's not even past.” - William Faulkner</li>
+                    <li>Source: BrainyQuote.com</li>
+                </ul>
+            </div>
+
+            <div id="contact" class="page">
+                <h2>Contact / About</h2>
+                <div class="card">
+                    <h3>About Ben</h3>
+                    <p>Ben, a 7th grader, loves science, history, music, and languages. He builds projects like EuroShop and CoachCash and creates YouTube content to inspire learning.</p>
+                </div>
+                <div class="card">
+                    <h3>Contact</h3>
+                    <p>📧 <a href="mailto:theyoutbebuisnnes@gmail.com">theyoutbebuisnnes@gmail.com</a></p>
+                    <p>🔗 <a href="https://open.spotify.com/show/2NQttvAap1Xv2y6uM1rpxs">Spotify Podcast</a></p>
+                    <p>🎥 <a href="https://www.youtube.com/@Historicaltimemachine-i6c">Historical Time Machine</a></p>
+                    <p>🎥 <a href="https://www.youtube.com/channel/UC3GL_6SYnKS06mxLjrfiBhQ">theyoutubebuisnnes</a></p>
+                </div>
+                <div class="card">
+                    <h3>Newsletter Signup</h3>
+                    <p>Join <em>Lessons from the Past</em> for weekly history stories and videos.</p>
+                    <input type="email" placeholder="Enter your email">
+                    <button onclick="alert('Subscribed!')">Subscribe</button>
+                </div>
+            </div>
+
+            <footer>
+                <p>
+                    <a href="#home"><i class="fas fa-home"></i> Home</a> |
+                    <a href="#watch"><i class="fas fa-video"></i> Watch</a> |
+                    <a href="#documentaries"><i class="fas fa-film"></i> Documentaries</a> |
+                    <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
+                </p>
+                <p>© Echoes of the Past – Ben (2025). Sourced from Britannica, History.com, Smithsonian.</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = "mock-api-key-1234567890"; // Replace with actual API key
+        const historyFacts = [
+            { question: "What started World War I?", answer: "The assassination of Archduke Franz Ferdinand in 1914 sparked WWI. Source: History.com. Watch: https://www.youtube.com/@Historicaltimemachine-i6c" },
+            { question: "Tell me about the Cold War", answer: "The Cold War was a geopolitical tension between the US and USSR post-WWII. Source: Britannica. Watch: https://www.youtube.com/channel/UC3GL_6SYnKS06mxLjrfiBhQ" },
+            { question: "Hey, how's it going?", answer: "Pretty good! Just chilling in the archives of history. Want to talk about the Roman Empire or something more recent?" }
+        ];
+
+        async function getChatbotResponse() {
+            const input = document.getElementById('chatbot-input').value.toLowerCase();
+            const responseDiv = document.getElementById('chatbot-response');
+            let response = "Sorry, I don't have an answer for that yet. Try asking about history!";
+
+            // Check for history-related or casual input
+            const fact = historyFacts.find(f => input.includes(f.question.toLowerCase()));
+            if (fact) {
+                response = fact.answer;
+            } else if (input.includes('hi') || input.includes('hello')) {
+                response = "Hey there! I'm your history-loving chatbot. Ask me about wars, empires, or just chat about your day!";
+            } else {
+                // Mock API call (replace with real API endpoint)
+                try {
+                    // Example: const res = await fetch(`https://api.example.com/history?query=${input}&key=${API_KEY}`);
+                    // For now, simulate API response
+                    response = `I couldn't find a specific fact, but check out our videos at <a href="https://www.youtube.com/@Historicaltimemachine-i6c">Historical Time Machine</a> for more history!`;
+                } catch (error) {
+                    response = "Error fetching response. Try again or watch our YouTube channels!";
+                }
+            }
+
+            responseDiv.innerHTML = response;
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+
+        // Random quote for Quotes Wall
+        const quotes = [
+            "“Those who cannot remember the past are condemned to repeat it.” — George Santayana",
+            "“History is a vast early warning system.” - Norman Cousins",
+            "“The past is never dead. It's not even past.” - William Faulkner"
+        ];
+        document.getElementById('random-quote').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+        // Update This Day in History
+        const todayFacts = [
+            "1945: United Nations founded.",
+            "1881: Gunfight at the O.K. Corral.",
+            "1776: Benjamin Franklin departs for France.",
+            "1950: Mother Teresa founds Missionaries of Charity."
+        ];
+        document.getElementById('today-fact').textContent = todayFacts[Math.floor(Math.random() * todayFacts.length)];
+    </script>
+</body>
+</html>
